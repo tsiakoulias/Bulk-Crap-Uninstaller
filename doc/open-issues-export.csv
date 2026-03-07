@@ -1,0 +1,887 @@
+"number","title","state","state_reason","labels","created_at","updated_at","closed_at","author","author_association","comments","html_url","body"
+"86","After BCU blocks system reboot the uninstall progress window stops updating and uninstallers stop running","open","","bug; low priority","2017-08-06 12:45:25","2023-10-10 20:32:06","","Klocman","OWNER","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/86",""
+"129","Feature request: delete used files on reboot","open","","enhancement; low priority","2017-10-09 23:01:24","2021-05-06 04:27:37","","DmitriyYukhanov","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/129","Hey, now, if I'm trying to remove some leftovers which are in use and can't be killed (e.g. some libraries could be loaded within explorer.exe) - I just see a standard Windows dialog about folder or file can't be removed.
+
+Would be nice to put files which can't be deleted (running processes or loaded dll libraries) to the delete-on-reboot queue.
+
+The registry key HKLM\System\CurrentControlSet\Control\Session Manager\PendingFileRenameOperations is used for that.
+
+And MoveFile API too.
+Here is a C# example:
+https://stackoverflow.com/questions/6077869/movefile-function-in-c-sharp-delete-file-after-reboot"
+"138","Proper detection of registry classes / AppID handling","open","","enhancement; junk/app detection; low priority","2017-10-29 09:56:07","2021-05-06 04:27:38","","Klocman","OWNER","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/138","Split from issue #85 by @DmitriyYukhanov
+There is a rudimentary detection of CLSID items in place, but it needs to be upgraded to look for application's IDs, and use them to find all registered classes/other junk.
+
+> I've uninstalled Google Earth Pro and noticed such leftovers were not detected:
+> 
+> **Registry**
+> 
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.kml
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\.kmz
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\AppID\{46A99B9C-4AC8-4EE9-AF7D-D02816CEC314}
+> (Default) - ""GoogleEarth""
+> 
+> HKEY_CLASSES_ROOT\AppID\{7E7898C9-8E34-4314-9670-771BC5343D0E}
+> (Default) - ""Keyhole""
+> 
+> This Keyhole app is related to the Google Earth:
+> HKEY_CLASSES_ROOT\Wow6432Node\CLSID\{63E6BE14-A742-4EEA-8AF3-0EC39F10F850}
+> AppID = {7E7898C9-8E34-4314-9670-771BC5343D0E}
+> HKEY_CLASSES_ROOT\Wow6432Node\CLSID\{63E6BE14-A742-4EEA-8AF3-0EC39F10F850}\LocalServer32
+> (Default) = C:\Program Files (x86)\Google\Google Earth Pro\client\googleearth.exe
+> 
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\AppID\googleearth.exe
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\AppID\Keyhole.EXE
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\GoogleEarth.AnimationControllerGE
+> and all other
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\GoogleEarth.*
+> ![image](https://user-images.githubusercontent.com/883587/28694349-b5a1273a-7331-11e7-9bd6-79ece37f3c3d.png)
+> 
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Keyhole.KHFeature
+> and all other
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\Keyhole.KH*
+> 
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\TypeLib\{3476FAB2-687F-4EA6-9AC2-88D72DC7D7FC}
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\TypeLib\{3476FAB2-687F-4EA6-9AC2-88D72DC7D7FC}\1.0
+> (Default) - Google Earth 1.0 Type Library
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\TypeLib\{3476FAB2-687F-4EA6-9AC2-88D72DC7D7FC}\1.0\0\win32
+> (Default) - C:\Program Files (x86)\Google\Google Earth Pro\client\googleearth.exe
+> 
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\WOW6432Node\CLSID\{1796A329-04C1-4C07-B28E-E4A807935C06}
+> (Default) - PointOnTerrainGE Class
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\WOW6432Node\CLSID\{1796A329-04C1-4C07-B28E-E4A807935C06}\LocalServer32 
+> (Default) - C:\Program Files (x86)\Google\Google Earth Pro\client\googleearth.exe
+> 
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\WOW6432Node\CLSID\{1A239250-B650-4B63-B4CF-7FCC4DC07DC6}
+> Same as previous, comes from HKEY_LOCAL_MACHINE\SOFTWARE\Classes\GoogleEarth.*
+> 
+> And all similar items at HKEY_LOCAL_MACHINE\SOFTWARE\Classes\WOW6432Node\CLSID\ which linked from HKEY_LOCAL_MACHINE\SOFTWARE\Classes\GoogleEarth.*
+> 
+> HKEY_LOCAL_MACHINE\SOFTWARE\Classes\WOW6432Node\Interface\{07F46615-1857-40CF-9AA9-872C9858E769}
+> and all other interfaces which has \ProxyStubClsid32 with default value {F4F7B301-7C59-4851-BA97-C51F110B590F} which corresponds to 
+> HKEY_CLASSES_ROOT\Wow6432Node\Interface\{F4F7B301-7C59-4851-BA97-C51F110B590F}
+> and
+> HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Classes\Interface\{F4F7B301-7C59-4851-BA97-C51F110B590F}
+> And has default value IPointOnTerrainGE.
+> Not sure how to go to the IPointOnTerrainGE, from what point. But it's obvious it is belongs to the Google Earth.
+> Maybe last write time? Not sure.
+> 
+> HKEY_USERS.DEFAULT\Software\Google\Google Earth Pro
+> HKEY_USERS\S-1-5-21-1278579218-726299998-186589410-1001\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FileExts.kml
+> HKEY_USERS\S-1-5-21-1278579218-726299998-186589410-1001\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\FileExts.kmz"
+"144","Remove Plug-ins & Extensions on Edge, Chrome, IE, Firefox, etc.","open","","enhancement; junk/app detection; low priority","2017-11-22 17:31:06","2021-05-06 04:27:38","","Klocman","OWNER","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/144",""
+"162","Empty folder after official uninstaller completion is not detected as a leftover","open","","junk/app detection; low priority","2018-01-07 18:36:46","2021-05-06 04:27:38","","DmitriyYukhanov","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/162","Hey, would be nice to detect empty folders which was left after official uninstallation.
+
+For example, I've installed Supersonic Sled NVIDIA demo, then uninstalled it.
+Official uninstaller clears the demo folder from the C:\Program Files (x86)\NVIDIA Corporation\NVIDIA Demos, but this parent folder is left empty and it's not detected as a leftover.
+
+Maybe, leftovers search could have a pre-uninstall pass to be able to detect such cases?
+Like Analyse app > uninstall it > analyse leftovers with consideration of the initial analysis.
+
+This additional pass could be probably used in some other cases to improve leftovers detection."
+"182","Search FileExts for registry junk / Some uTorrent registry leftovers are missed at the leftovers search","open","","junk/app detection; low priority","2018-05-05 22:25:23","2021-05-06 04:27:38","","DmitriyYukhanov","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/182","Hey, I recently removed uTorrent and noticed some leftovers in registry were not found:
+
+HKEY_USERS\S-1-5-21-2081619299-1437623788-1181410189-1001\Software\Classes\.torrent\OpenWithProgids
+Value name: uTorrent
+
+HKEY_USERS\S-1-5-21-2081619299-1437623788-1181410189-1001\Software\Classes\bittorrent\DefaultIcon
+
+Value with default name and data:
+C:\Users\[my user name]\AppData\Roaming\uTorrent\maindoc.ico
+
+HKEY_USERS\S-1-5-21-2081619299-1437623788-1181410189-1001\Software\Classes\bittorrent\shell\open\command
+
+Value with default name and data:
+""C:\Users\[my user name]\AppData\Roaming\uTorrent\uTorrent.exe"" ""%1"" /SHELLASSOC
+
+HKEY_USERS\S-1-5-21-2081619299-1437623788-1181410189-1001\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.torrent\OpenWithList
+
+Value with name ""a"" and data ""uTorrent.exe""
+
+HKEY_USERS\S-1-5-21-2081619299-1437623788-1181410189-1001\Software\Microsoft\Windows\CurrentVersion\Explorer\FileExts\.torrent\OpenWithProgids
+
+Value with name ""uTorrent""
+"
+"183","Add easy/beginner mode","open","","enhancement; low priority","2018-05-10 14:49:45","2021-05-06 04:27:38","","Klocman","OWNER","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/183","Old suggestion, multiple users suggested it.
+
+> In Maine window you have too many option for a novice user
+> 1. Click any software to uninstall it ?
+> 2. You get a window with too many option. a novice user can’t understand
+> Could you develop a step-by-step assistant what is default option
+> When does software is finish uninstall by default hey Steve just to create restock points and save registers and union stole all part of software"
+"186","FR: Recognize Application Plug-Ins/Extensions/Add-Ons/Add-Ins","open","","junk/app detection; low priority","2018-05-17 02:51:12","2021-05-06 04:27:38","","myfairsyer","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/186","I'm not sure if this might break the mold a bit, but it would be interesting for BCU to recognize Extensions of at least the most common Browsers, Text Editors, IDEs and maybe Office."
+"192","Enhancement: Default View","open","","enhancement; low priority","2018-06-02 17:24:50","2021-05-06 04:26:50","","ludasmokva","NONE","5","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/192","Hi! 
+It would be really cool to have an easy access 'default-view' or 'home' button.
+
+Currently, if I change views (to look at 'View unregistered' or 'View Updates' or go through filtering, it takes me several steps to get back to the original view (the one that appears when BCU is started up where it lists all the programs BCU recognizes). What I have to do now is set Comparison Method to 'contains any' and the Target Property to 'is valid'. That takes me back to the original listing of all the programs - a 'home page' of sorts. (At least that's what it appears like.)
+
+Perhaps this already exists, and I don't know about it. But if it doesn't, a 'default' view could be set by the user in settings, and a button could be created to automatically bring you to that default-view from other views/screens. Or, if that's too much, you could simply create a 'default-view' option in the View menu drop-down items which again brings you back to the original view you get when you open up BCU. 
+Just a thought. 
+:)
+ 
+"
+"198","Inno Setup leftovers","open","","junk/app detection; low priority","2018-06-27 23:39:17","2021-05-06 04:26:50","","DmitriyYukhanov","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/198","Hey, 
+
+After uninstalling Inno Setup, I've noticed BCU didn't found any leftovers, but I can see this registry key which looks like a leftover:
+
+HKEY_USERS\S-1-5-21-2081619299-1437623788-1181410189-1001\Software\Jordan Russell
+
+It has only 1 subkey:
+HKEY_USERS\S-1-5-21-2081619299-1437623788-1181410189-1001\Software\Jordan Russell\Inno Setup"
+"200","Add lessThan/moreThan search options and allow to filter by date, size and rating (others?)","open","","enhancement; low priority","2018-07-13 09:41:49","2021-05-06 04:26:50","","Klocman","OWNER","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/200","Filtering by rating mentioned in #192"
+"220","BCUnistaller can not be used in safe mode in windows","open","","bug","2018-10-09 12:30:48","2023-03-04 20:31:48","","Klocman","OWNER","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/220","> Tested in windows 10"
+"228","Dark ui mode?","open","","enhancement","2019-01-13 13:57:59","2026-02-22 15:07:13","","GrosBourrin","NONE","38","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/228","all in the title ! it's only a suggestion ! keep up the good work"
+"255","add indonesian language","open","","enhancement; help wanted","2020-03-10 20:10:50","2021-05-06 04:37:35","","candrapersada","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/255","add indonesian language Bulk-Crap-Uninstaller"
+"268","appearance tweaks - honor windows font and color settings","open","","enhancement","2020-07-19 00:44:03","2021-05-09 04:45:56","","pharaonic-faery","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/268","Hello !
+I would like to request some tweaks that I need, because I don't see very well. I use big size police and white text on black background in Windows display settings, but BCUninstaller doesn't apply system police. So it would be great if it could be possible, or if we can set a personalized police.
+Thanks"
+"314","BCU can't find eclipse ide for java","open","","junk/app detection","2021-09-05 09:29:43","2022-02-07 16:29:39","","B1tgeek","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/314","BCU can't find eclipse ide for java"
+"316","Does not calculate usage of wsl1 or wsl2 installs","open","","junk/app detection","2021-09-20 13:00:31","2022-02-07 16:29:25","","mjz19910","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/316",""
+"323","Suggestions for New Features Not Available Elsewhere","open","","enhancement; junk/app detection","2021-10-11 11:23:05","2021-10-11 11:23:05","","Klocman","OWNER","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/323","### Discussed in https://github.com/Klocman/Bulk-Crap-Uninstaller/discussions/315
+
+<div type='discussions-op-text'>
+
+<sup>Originally posted by **ag346** September 18, 2021</sup>
+There are certain types of information that are available in the windows explorer and/or the programs and features windows that are not available in BCU and would be useful. 
+
+For example: Update Info Link lists the official URL where you can download the latest version. Support Link lets you know where to go for help regarding the program. The Comments field seems as if it could be edited by the end-user in order for the person to enter a few useful reminders. The install source would be useful if it could be edited by the end-user in order to point to a folder where the person stores all of their installers. The downloads folder is typically just the initial storage location for the installer.
+
+Lastly, when you open the properties windows for a given program, there is a previous versions tab that in my experience is always empty. It would be nice to have a way of referencing previous versions in a software folder specified by the end-user as opposed to having to rely on the windows file history or restore points, which in my experience never seem to contain previous versions of software installers.</div>"
+"325","Doesn't detect Wave browser to uninstall","open","","junk/app detection","2021-11-01 16:02:06","2022-02-07 16:26:59","","Andrew-J-Larson","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/325","See https://wavebrowser.com/"
+"331","This app doesn't create a shortcut in context menu like Iobit Unistaller 😞 #FeatureRequest","open","","enhancement","2021-11-30 13:22:15","2022-05-10 13:00:36","","TheNonSmoker","NONE","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/331","![Screenshot 2021-11-30 184654](https://user-images.githubusercontent.com/30073064/144054998-e553ad46-9275-4ae5-9b8f-86a652ca528c.png)"
+"338","New UI Design","open","","enhancement; low priority","2022-01-22 15:27:13","2022-12-02 16:38:51","","ghost","NONE","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/338","Currently BCU is the best Open Source Software uninstaller for Windows. But as many of us know that Windows has launched with a major redesign such as Rounded corners, WinUI, Mica theming, etc.
+
+BCU supports the New Scrollbars, Snap layouts, Rounded corners already. What do I think is ‘Why not redesign with Fluent UI theme as BCU is only specific to Windows ?’
+"
+"348","Is it possible to add an ""Exclude scan paths"" setting?","open","","enhancement; low priority","2022-02-11 07:26:10","2023-03-04 20:37:21","","kingofotaku","NONE","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/348","I think it helps to shorten the time it takes to scan."
+"388","why not remove persist scoop when uninstalling package","open","","enhancement; junk/app detection","2022-07-05 20:36:34","2022-07-18 19:02:41","","candrapersada","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/388","why not remove persist scoop when uninstalling package like `scoop uninstall -p <manifest>`?"
+"405","[Feature Request] Font Family and Font Size Option to Change","open","","","2022-08-23 22:29:25","2023-03-05 08:00:07","","ghost","NONE","6","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/405","Hi! If it is possible, will you add an option to change font family and font size? Because it's too little and hard to read! The icon too must resize according to font size. Thanks!"
+"414","Creating System Restore Point Leads to App Crash","open","","cant-reproduce","2022-09-30 09:50:40","2023-03-04 15:05:59","","GitAlexToTheGreek","NONE","6","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/414","Hi there,
+
+Running version 5.4.0.0 on Windows 11
+
+App is crashing/exiting during the system restore point creation step of an uninstallation (""Bitdefender VPN"" in case it's relevant).
+
+Wondering if I should simply try reinstalling BCU or if there's further troubleshooting steps?
+
+Thanks in advance, 
+Alex "
+"418","Add GOG Galaxy support / BC Uninstaller doesn't detect my games from GOG Galaxy","open","","junk/app detection","2022-10-23 10:03:45","2023-10-01 14:39:36","","Dr2t39","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/418",""
+"431","Add script for disabling network in S0 standby to fix battery drain","open","","enhancement","2022-12-04 05:52:05","2022-12-04 05:52:05","","Klocman","OWNER","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/431","https://www.tenforums.com/tutorials/146593-enable-disable-network-connectivity-modern-standby-windows-10-a.html"
+"435","Not fully uninstalling windscribe desktop version","open","","bug; cant-reproduce","2022-12-14 20:19:44","2023-03-03 20:13:34","","ghost","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/435","As the title says it is not uninstalling windscribe fully. Cannot figure out what it is leaving behind either. When I uninstall it, the option is still left in BCUninstallers list. I click uninstall again and it goes through the same steps, but still it remains in the list. It is also causing errors in event viewer, so that is how I know it's not fully uninstalled either."
+"436","Interesting application relationship detection issue","open","","bug; cant-reproduce","2022-12-27 14:07:38","2023-03-03 20:12:57","","LearnIIBurn","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/436","Hi, first off I love BC Uninstaller, I seriously think it's my favorite application for Windows. Great stuff here and thank you for all the work that goes into it :)
+
+I have had this happen with a few random applications before in the past with no real pattern in their category. When chosen to uninstall it will proceed to the step where you can kill potential blocker apps, and the list will be pretty much everything running at the moment in Windows. Continuing past that with no killing everything proceeds smoothly  and app is uninstalled.
+
+When searching for leftover crap I am presented with a list of the regular items BC-U finds like Start Menu lnks, prefetch data, and what appears to be a nice sized chunk of my Windows Registry; all check marked for removal with a confidence rating of: Good.
+
+This very well could be completely a problem with the application(s) themselves and how they react with BC-U, etc. etc. But I thought I'd bring this to attention in case it hasn't been observed before and since it is potentially a loaded gun for a unsuspecting user.
+
+I exported the list here for you and if there is anything else I could give you logs related I'd be happy to do so. I failed to screen grab but might be able to replicate this once more. 
+
+My system:
+Razer Blade Stealth 13"" 2020 model
+i7-1065G7 4C-8T CPU
+16GBDDR4
+WIN 11 Pro x64
+[New BCUninstaller Junk Export.txt](https://github.com/Klocman/Bulk-Crap-Uninstaller/files/10308586/New.BCUninstaller.Junk.Export.txt)
+
+Cheeers! "
+"443","VMWare uninstaller is only shown when you show protected elements","open","","junk/app detection; cant-reproduce","2023-02-02 01:09:34","2023-10-01 14:34:50","","djbanana","NONE","6","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/443","the program , does not detect vmware player in the list of installed programs , the location of vmware player is in the x86 program files folder, Im running windows 11"
+"445","Logitech G Hub uninstallation does not detect leftover files","open","","junk/app detection; low priority","2023-02-04 11:14:03","2023-03-04 20:14:22","","rk-exxec","NONE","4","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/445","I uninstalled the Logitech G Hub application. 
+In this step to remove leftover files however there were no entries, despite the userdata folder  `Appdata\Local\LGHUB` still being there. 
+I assume that this is because the foldername is not identical to the program name?
+
+
+The program installs in `C:\Program Files\LGHUB`. 
+Userdata is in `Appdata\Local\LGHUB`. The userdata was not detected or removed 
+
+System: Win 10 Pro 22H2
+"
+"447","Lots of apps not uninstallable, add an ""run as Admin always"" option?","open","","junk/app detection; low priority","2023-02-12 19:59:46","2023-12-13 09:49:19","","secretmango","NONE","8","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/447","1. This app is awesome! it is so needed, it allows automation and so many useful features, really nice!
+
+But compared to Geek Uninstaller, it just doesnt work.
+
+I think the problem is, that it doesnt run as root (Linux user, not much idea of Windows), but opens admin Powershell instances (or how the hell thats called) for every uninstall.
+
+The result is, that many apps are not removable:
+- Edge (Update works)
+- other components
+
+Can you just run the Program as admin? A feature to do that would be really good, even though of course it has security risks."
+"451","Oracle","open","","cant-reproduce","2023-02-25 15:16:55","2023-03-21 00:03:58","","hhuang1103","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/451","Please develop a function to uninstall the Oracle database and Virtualbox."
+"465","How can i fix this?","open","","cant-reproduce","2023-03-10 19:52:27","2023-03-30 20:43:35","","Dolaaz","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/465","the display icon is for a game and installation location is from another game
+
+how can i fix this?
+![Untitled](https://user-images.githubusercontent.com/127548801/224414516-5304d51a-30db-4ec6-9c66-2a9f784fbc1d.jpg)
+"
+"468","Checkboxes on lists bug out and can't be toggled or don't update visually / ""No uninstallers were selected"" bug","open","","bug","2023-03-12 18:43:02","2025-10-31 09:50:49","","S197Stang","NONE","6","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/468","Hello, i am very happy with this software but from time to time, when i try to uninstall a program, i get error that says there were no uninstallers selected.
+![Untitled](https://user-images.githubusercontent.com/127688604/224565464-daa994f6-9d0e-4407-9001-92f66243ff73.jpg)
+ Kind of annoying bug."
+"475","BCU window opens but doesnt fully load","open","","bug; cant-reproduce","2023-03-22 20:36:15","2023-05-21 20:50:17","","bobbbobobb","NONE","9","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/475","so up until recently BCU was working fine, now it just opens the program window but never resolves into a window that comes to the front. i installed the latest update but still same"
+"481","msg next step is ""scan residues""","open","","enhancement","2023-04-07 09:36:07","2023-04-14 20:53:37","","nico92GitHub","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/481","reHello Marcin
+
+I don't remember if I made this comment before:
+The last window at the end of an uninstallation does not indicate that the next step is to search for ""vestiges"" in french, traces that can be removed, residues. It seems to me that it would be better to indicate this last step.
+
+As you see, I'm not comfortable in github. So with this new issue I think it's better that way...
+Nico"
+"488","ScriptHelper gets error 59 during deletion","open","","bug","2023-05-13 17:44:00","2023-07-31 10:49:26","","blank-teer","NONE","7","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/488","ScriptHelper.log says System.UnauthorizedAccessExeption: Cannot write to the registry key"
+"493","Console feature request","open","","enhancement; low priority","2023-05-21 15:12:38","2024-02-24 07:36:41","","LPCrypticus","NONE","8","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/493","Hi I would like to be able to use ""Uninstall Manually"" and ""take ownership"" features on console with bcul lists"
+"494","Out of memory.","open","","cant-reproduce","2023-05-21 18:18:23","2023-05-22 07:48:51","","SuperFurias","NONE","12","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/494","![image](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/34806112/8c2159c2-a366-4eeb-8679-bf1c43f24232)
+
+I mean... i have enough gb free.. right?"
+"495","BCUninstaller.dll: System.EntryPointNotFoundException error ","open","","","2023-05-22 13:26:09","2023-06-14 10:38:38","","Komprogue","NONE","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/495","Last two (or maybe three) releases of the app always have this error message after every deinstallation process. 
+It's running on Windows 7 x64. 
+
+![BCUninstaller_DKOUPBgTgx](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/84424346/30fa94d0-b867-425b-84be-fd049c1461d4)
+![BCUninstaller_m9WqT9sD2o](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/84424346/5020e86d-18bb-458f-ba7c-d05858ea2278)
+"
+"499","Incomplete removal","open","","","2023-06-02 04:04:27","2023-06-14 10:44:23","","iamjaydear","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/499","I'm using BCU v5.6. x64 and have just discovered that a driver installed by an app has not been identified and therefore not removed. It is causing some issues in my Win 11 Pro on an ASUS TUF F15 laptop. The driver is vacnatkd.sys and was part of Ashampoo Soundstage Pro. I've tried reinstalling the app and then using BCU to get rid of it, but the driver remains unidentified and so far, cannot be manually deleted. I'm an end-user not a programmer. "
+"504","BEWARE Portable Apps Deleted","open","","","2023-06-21 00:51:29","2023-06-25 17:46:15","","neoOpus","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/504","I've seen that this ""Create MD5 check sums"" occupy too much space and in a moment of inatention I decided to uninstall it but what happened this caused the deletition of the whole Portable Apps folder (15GB)... some of the folders contains data that I wasn't expecting to delete... the Portable Apps can be reinstalled but losing configurations and data is really annoying... I am trying to do a recovery (undelete) right now but without much hope."
+"505","Icons are very small on a high-DPI screen with DPI aware mode enabled","open","","bug","2023-06-24 20:09:35","2023-06-25 17:48:29","","Dashan-IZ","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/505","![image](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/78125220/230ab543-fc67-47f5-9876-2656e0dacded)
+笔记本是3.5k屏幕，打开dpi感知里边图标和字体很小，基本看不清，希望能在下个版本解决这个问题"
+"506","[Feature Request] Batch create app shortcuts","open","","","2023-07-01 09:37:41","2023-07-04 13:32:26","","TensorABC","NONE","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/506","According to the path, publisher, installation time, installation source and other elements of the application, create an option window for the user to choose, and create a shortcut classification with a folder tree"
+"509","It still can't recognize the correct name of the software.","open","","","2023-07-07 15:38:29","2023-07-07 19:32:14","","helan-1997","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/509","![image](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/75832012/3be1225b-637a-4ba4-8776-9bc875a7ef1f)
+the  first  software is amd  software。"
+"514","Hunter mode does not support identifying desktop icons","open","","enhancement","2023-07-13 05:24:48","2023-07-13 17:25:10","","NebulaTechs","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/514","另外，hunter mode可以像revo uninstaller一样放在桌面右上角，在需要时可以立即使用。"
+"520","Uninstaller name ""Update"" causes high confidence Leftover false positives","open","","bug; junk/app detection","2023-07-14 17:09:13","2023-07-16 19:15:15","","leumasme","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/520","When removing an uninstaller named ""Update"" (belonging to MongoDB), the leftover removal came up with a lot of `Good` & `Very Good` confidence leftovers.
+Among them, the Chrome & Office Updaters, the Discord autostart entry (since it points to `DiscordPTB/Update.exe`), etc
+![image](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/29953391/08d190a6-758b-42c2-bcac-1bbe7d79e329)
+It's not clear what could be done about uninstallers with a generic name such as this one, but it could be worth improving if possible since accidentally removing any of the above false-positives would be quite annoying.  
+Possibly make a list of common generic names such as ""Update"" that should be treated as low confidence?
+Possibly seek to find out why the mongodb updaters name was detected as ""Updater"" in the first place and see if the selected name could be improved? (I sadly don't have the info about what it's detected install folder etc was named anymore since I just uninstalled it) "
+"532","[Feature] Search bar on homepage","open","","enhancement; low priority","2023-08-07 12:03:05","2023-09-27 19:50:20","","realgooseman","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/532","Hi @Klocman,
+
+Long time BCU user here, thanks for this useful piece of software. I've read some previous issues, I know you're busy and the project is not your priority right now but there's one feature I would like to see on BCU. I also think the UI is a bit outdated and I'm aware there's not much possibility with WinForms so a re-write of the UI is needed, but that's a different topic.
+
+This request is intended to Klocman and/or any person that's willing to implement this feature.
+
+**_New feature :_** 
+
+A persistent search bar on the homepage instead of having to hit F3/Ctrl+F to see the search bar on the sidebar. Here is a quickly made mockup to have an idea about how it would look like :
+
+> 1 : The filter button next to the search button would regroup everything in the sidebar that is under the search bar
+> 2 : People might like the sidebar, so maybe add option to toggle between sidebar or homepage searching
+
+![](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/64812183/e1a3bae3-fce5-42df-8b3c-a9078d81793e)
+
+**_Why is this feature needed :_** 
+
+It will make searching easier and help with faster discovery of software packages.
+"
+"534","Unable to delete registry","open","","","2023-09-08 04:54:14","2023-09-27 19:40:05","","ghost","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/534","Unable to clean clean Google Chrome registry"
+"538","Uninstalling as admin leaves app links for users","open","","","2023-09-22 07:52:48","2023-09-27 19:47:40","","nickehallgren","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/538","Hi,
+
+clean installed computer (only admin account) and using BCU to remove MS apps (Cortona, Goove Music etc etc) works really well. After uninstall the apps are not showing in the installed apps list (or start menu) anymore. But when making a new user (Standard user), that user has all the Apps listed in the Start Menu and also under Installed Apps (usually with a size of 8kB). But if the user tries to start the app it is still there/will be downloaded. As BCU is run as admin it will not show the apps the user sees because it shows what the admin user sees.
+
+Is there a way to remove the apps from the user as well?"
+"540","Failed to delete some items","open","","","2023-09-29 08:08:26","2023-10-01 14:43:57","","gtumanyan","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/540","Error when program tries to delete Bonjour services before deleting the main Bonjour program
+![image](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/24494814/de70deab-156b-47ca-a3b6-e155c01b8cfe)
+"
+"544","Update to .NET 7 or 8?","open","","enhancement; low priority","2023-10-10 20:44:58","2024-05-20 20:15:45","","Anutrix","NONE","12","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/544","Now that .NET 8 is almost out and .NET 5 is past the support end date(May 10, 2022), maybe we can move to a newer .NET LTS version.
+
+EOL info from https://dotnet.microsoft.com/en-us/platform/support/policy/dotnet-core.
+
+"
+"551","Forever Loading when starting both in standalone and protable ver.","open","","","2023-11-07 05:04:09","2023-11-08 20:00:01","","Kane-Joshua","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/551","![Image_1699333357249](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/30388472/03fa65d0-e47a-40fd-838e-357125db3234)
+
+Forever loading. "
+"552","Launch Error causing freezing, making program unusable: System.Text.Json.JsonException","open","","","2023-11-07 11:02:32","2024-04-11 17:26:13","","nsde","NONE","6","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/552","Windows 10 x64 | BCU v.5.6 & v5.7 x64 [SETUP] | AMD CPU
+
+## How to reproduce
+- Install *non*-portable version
+- I have used prior versions of the software (pretty sure I have updated the software without any issues before)
+- I updated to v5.7 and the error occurred
+
+## Workaround
+- v5.6 PORTABLE seems to work fine
+
+**File:**
+BCUninstaller.dll [5.7.0.0] - This error also occurs in version 5.6
+
+**Exception**
+'C' is an invalid start of a value. Path: $ | LineNumber: 0 | BytePositionInLine: 0.
+
+**Target Site**
+Void ReThrowWithPath(System.Text.Json.ReadStack ByRef, System.Text.Json.JsonReaderException) @ System.Text.Json.ThrowHelper
+
+**NBug:** 1.2.0.0
+**CLR:** 6.0.22
+
+![image](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/67185896/418d4bc9-06e2-40d1-8d8c-15b5c7db2179)
+![image](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/67185896/ab958303-d92f-44b0-b667-1a0bc9f77a96)
+"
+"556","Add option to auto-close the ""Uninstall progress"" window and proceed to next step","open","","enhancement","2023-11-15 19:07:19","2023-11-15 19:07:19","","Klocman","OWNER","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/556","### Discussed in https://github.com/Klocman/Bulk-Crap-Uninstaller/discussions/478
+
+<div type='discussions-op-text'>
+
+<sup>Originally posted by **vertigoelectric** March 29, 2023</sup>
+After uninstalling, the progress window (screenshot attached) requires me to click ""Close"" before it moves on to the leftovers detection process.  Is there any way to automatically do this?  I don't see any purpose in requiring this interaction.  Thanks!
+
+![snap_2023-03-29_07-03-39_18229291](https://user-images.githubusercontent.com/22353765/228564397-25876e1c-86c0-4bda-8f87-4016f3828612.png)
+</div>"
+"558","file picker in ""export data of selected uninstallers"" picks ""desktop"" from other ""user""","open","","bug; low priority","2023-11-20 18:11:28","2023-12-07 13:41:03","","goyalyashpal","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/558","### Titles & Summaries:
+
+* file picker in ""export data of selected uninstallers"" picks ""desktop"" from other ""user""
+* ""export data of selected uninstallers"" picks desktop from other user
+
+### Details:
+
+on clicking ""desktop"" in the file picker in the mentioned dialog, it picks the desktop directory belonging to other user in case of multi-user windows
+
+### Steps:
+
+perform [these](https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/396#issuecomment-1207341576) on a multi-user system
+
+0. have multi-users on system
+1. open bcu
+2. select any uninstaller
+3. file > export data of selected uninstallers
+4. pick desktop in the file picker shown
+
+### additional context:
+
+i have two users: 
+1. admin: this user was created _after_ the current user one - if i recall correct.
+2. personal: the user i was using currently
+
+umh, i think it would need more info too - but i don't know which one, so, feel free to ask :)"
+"560","WindowsApps (Microsoft Store)","open","","junk/app detection","2023-11-21 19:39:53","2023-12-13 09:41:19","","volkankaban","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/560","Friendly reminder: Bulk-Crap-Uninstaller does not remove older versions of apps installed from the Microsoft Store App.
+
+Microsoft Store apps Folders;
+- C:\Program Files\WindowsApps\
+- C:\Users\{user}\AppData\Local\Packages\
+
+```bash
+# List Microsoft Store apps for all users
+Get-AppxPackage -AllUsers | Sort-Object Name | Select-Object PackageFullName, Name, Version
+
+# List Microsoft Store apps for a specific user (replace {user} with your username)
+Get-ChildItem -Path ""C:\Users\{user}\AppData\Local\Packages\"" | ForEach-Object { $PackageName = $_.Name; Get-AppxPackage | Where-Object { $_.PackageFamilyName -like ""*$PackageName*"" } | Sort-Object Name | Select-Object PackageFullName, Name, Version }
+```
+
+![Screenshot 2023-11-21 125657](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/12288837/6cebec1c-b84a-44d7-9e22-2208a8ea67c9)
+![Screenshot 2023-11-21 130620](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/12288837/d89f11c3-25c3-4bc3-b6a0-0289c262de4f)
+
+
+"
+"561","Leftovers still present on the system","open","","junk/app detection","2023-11-22 15:17:46","2023-12-17 16:45:04","","yashgorana","NONE","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/561","BCUninstaller doesn't detect and remove leftover app directories in `%PROGRAMDATA%` `%APPDATA%` or dot-folders in home directory. Example:
+- After uninstalling GOG Galaxy through BCU I can still find the following leftover directories:
+  * `%PROGRAMDATA%/GOG.com`
+  * `%LOCALAPPDATA%/GOG.com`
+- Removing VS Code does not remove `~/.vscode` directory. Same for Docker Desktop `~/.docker`
+
+
+OS: Windows 11 22621
+BCU Version: 5.7
+"
+"566","Service detection and removal","open","","","2023-12-03 11:43:48","2023-12-06 13:04:02","","8LWXpg","CONTRIBUTOR","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/566","It would be useful to have a feature that can detect and remove any services that are running in the background and causing the uninstallation fails. Sometimes, these services are left over after the uninstallation and cause problems."
+"567","[Feature request] Remember window/column sizes","open","","enhancement","2023-12-03 11:50:17","2023-12-06 12:38:45","","Destroy666x","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/567","Currently you have to resize a bunch of stuff each time you uninstall an app. Would be nice if there was a way to remember:
+- sizes of various windows that are showing up, e.g. uninstaller details or leftover removal
+- similarly, column sizes in various windows
+
+Could be either optional as a setting or default behavior."
+"568","[Feature request] Duplicate app finder/filter","open","","enhancement","2023-12-03 12:10:01","2025-06-12 13:00:41","","Destroy666x","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/568","Would be nice if there was a way to quickly find all similarly named applications. For example, Blender installs different versions without uninstalling old ones. Some other apps can also leave undesired old versions. This would let you find them and clean your system much more easily."
+"571","Cant deinstall IOBIT Uninstaller","open","","","2023-12-07 08:06:51","2023-12-07 13:37:17","","ghost","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/571","The IOBIT Uninstaller software cannot be uninstalled with this tool here"
+"572","Can you provide a Traditional Chinese interface?","open","","enhancement","2023-12-17 06:53:57","2024-02-23 16:25:48","","ioc2e3","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/572","That ...
+
+Can you provide Traditional Chinese interface?
+
+......................................
+
+and...
+
+Why isn't it updated?
+
+"
+"576","Autodesk Products stuck on user prompt.","open","","automatization","2024-01-11 11:02:18","2024-02-23 16:26:18","","LegacyTH","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/576","Autodesk Products such as Autocad 2024 cannot be silently uninstalled - requiring user prompt.
+
+This is with a silent uninstall, with automatically kill stuck quiet uninstallers on, generate missing quiet uninstallers and automatically kill if stuck waiting for user input enabled. Nothing happens and it will stay on this uninstall screen forever.
+
+Is there a way around this or is it down to the type of uninstaller Autodesk uses?
+
+![image](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/63205891/2c81bd06-834e-4733-823b-fe4a54cdc9f8)
+
+
+Much appreciated...!"
+"579","Missing/Broken Msiexec Circumventing CPU Stall Checks","open","","bug; automatization","2024-01-23 19:24:28","2024-02-23 16:25:17","","s-nix","CONTRIBUTOR","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/579","While attempting to use BCU to uninstall a ""broken"" Zoom msiexec install (the uninstall media was missing), I noted that msiexec sometimes will be using 10%+ CPU when it is doing nothing but sitting at this screen:
+
+![image](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/11358399/36e355d5-8f5d-419c-bf82-7425985442cc)
+
+Currently the [`UninstallThread()`](https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/f18ce757f3c4edd219c123211f4209ffa0f5a726/source/UninstallTools/Uninstaller/BulkUninstallEntry.cs#L283) method in [`BulkUninstallEntry.cs`](https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/master/source/UninstallTools/Uninstaller/BulkUninstallEntry.cs) is waiting for [30 consecutive `true` returns](https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/f18ce757f3c4edd219c123211f4209ffa0f5a726/source/UninstallTools/Uninstaller/BulkUninstallEntry.cs#L366-L381) from [`TestUninstallerForStalls()`](https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/f18ce757f3c4edd219c123211f4209ffa0f5a726/source/UninstallTools/Uninstaller/BulkUninstallEntry.cs#L205) saying that the process is using less than [1% CPU and 10KB of IO](https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/f18ce757f3c4edd219c123211f4209ffa0f5a726/source/UninstallTools/Uninstaller/BulkUninstallEntry.cs#L262), however in my test case, the process will infinitely run, as msiexec is running at 10%+ CPU but with 0 I/O. I have two solutions to this that I have tested successfully locally:
+
+## **The easy fix**
+Simply make the CPU and IO checks an `or` instead of `and`:
+
+_Current:_
+https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/f18ce757f3c4edd219c123211f4209ffa0f5a726/source/UninstallTools/Uninstaller/BulkUninstallEntry.cs#L262
+_Proposed:_
+```c#
+if (c0 <= 1 || c1 <= 10240)
+```
+While I do not have solid data to back this up, my assumption would be that if an uninstaller does not perform any IO work or any CPU work in 30 seconds then it is likely stalled. I am open to suggestions/corrections here as this is simply an assumption.
+
+## **The possibly more robust fix**
+Add a new property and constructor parameter to `RunUninstallerOptions` to allow for an optional ""timeout"":
+
+_Current:_
+https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/f18ce757f3c4edd219c123211f4209ffa0f5a726/source/UninstallTools/Uninstaller/BulkUninstallEntry.cs#L615-L635
+
+_Proposed:_
+```c#
+internal sealed class RunUninstallerOptions 
+ { 
+     public RunUninstallerOptions(
+bool autoKillStuckQuiet, bool retryFailedQuiet, bool preferQuiet, bool simulate, BulkUninstallTask owner,
+/****New timeout property****/int timeout = -1) 
+     { 
+         AutoKillStuckQuiet = autoKillStuckQuiet; 
+         RetryFailedQuiet = retryFailedQuiet; 
+         PreferQuiet = preferQuiet; 
+         Simulate = simulate; 
+         Owner = owner;
+         // ***New timeout property***
+         Timeout = timeout;
+     } 
+  
+     public bool AutoKillStuckQuiet { get; } 
+  
+     public bool PreferQuiet { get; } 
+  
+     public bool RetryFailedQuiet { get; } 
+  
+     public bool Simulate { get; } 
+  
+     public BulkUninstallTask Owner { get; } 
+
+    // ***New timeout property***
+    public int Timeout { get; }
+
+ } 
+```
+
+Use this timeout functionality where required to kill the uninstall process even if it is not being marked as ""stalled"". For instance:
+
+_Current:_
+https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/f18ce757f3c4edd219c123211f4209ffa0f5a726/source/UninstallTools/Uninstaller/BulkUninstallEntry.cs#L316-L319
+
+https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/f18ce757f3c4edd219c123211f4209ffa0f5a726/source/UninstallTools/Uninstaller/BulkUninstallEntry.cs#L375-L379
+
+_Proposed:_
+```c#
+var idleCounter = 0;
+Stopwatch watch = new Stopwatch();
+if(options.Timeout > 0) { watch.Start(); }
+while (true)
+```
+
+```c#
+ // Kill the uninstaller (and children) if they were idle/stalled for too long 
+ if (idleCounter > 30 || watch.ElapsedMilliseconds >= options.Timeout) 
+ { 
+     watch.Stop();
+     KillProcesses(watchedProcesses); 
+     throw new IOException(Localisation.UninstallError_UninstallerTimedOut);
+// ... after the while loop
+watch.Stop();
+```
+
+This would allow for all functionality to remain the same unless something explicitly implements the timeout.
+
+I would be using this in my current fork to implement junk cleanup in `BCU-console`. If you'd like a PR for this, I'll be happy to put one together."
+"584","Error due to deleted windows defender folders","open","","cant-reproduce","2024-02-13 08:50:07","2024-05-25 08:37:19","","Basilisvirus","NONE","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/584","I have ""send and quit"" this error a couple of times. It happens because I have deleted the window's defender folders and files and I have disabled windows update features.
+
+![image](https://github.com/Klocman/Bulk-Crap-Uninstaller/assets/18421898/0373fb3f-5985-47c4-b5f7-c658821a0b98)
+
+So the software might as well change so that, it wont report this error, if it cant find the windows defender or some updates."
+"608","Fresh install of Windows 11 in the EU, BCUninstaller did great but missed Spotify!","open","","junk/app detection; low priority","2024-05-10 12:47:09","2024-05-10 12:55:18","","Klocman","OWNER","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/608","### Discussed in https://github.com/Klocman/Bulk-Crap-Uninstaller/discussions/605
+
+<div type='discussions-op-text'>
+
+<sup>Originally posted by **mboeker** May  4, 2024</sup>
+As the title says. Brand new installation, EU based, and I used BCUninstaller to do a nice cleanup, but noticed that Spotify was still in the start menu afterwards.</div>"
+"616","Change the search engine","open","","","2024-05-28 19:39:23","2024-05-28 23:22:02","","AdvancedUA","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/616","I use/pay for Kagi, I De-Googled and would love an option to change the default option from Google to Kagi (Or the search engine of a user's choice, in general)
+
+Unless you have it and I missed it, I couldn't find it in the manual :)"
+"627","Really slow on Windows 11","open","","","2024-07-17 14:07:44","2025-11-01 23:39:21","","RichCat6","NONE","5","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/627","Version 5.8 of the program is really slow on Windows 11, taking what feels like ages to uninstall one small program.
+
+System specs if needed:
+- Intel Pentium Silver N5030
+- Intel HD Graphics 605
+- 8GB DDR4 RAM
+- 1TB M.2 SSD"
+"628","I encountered an issue","open","","","2024-07-19 11:45:21","2024-08-21 12:51:29","","larry610","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/628","Hi Klocman,
+
+Thank you for creating such a useful program. However, I encountered an error that caused the program to close, and I am unable to fix it. Could you please help me? Please see the attached image below for more details.
+
+I am not very familiar with English, so this message has been translated. Please excuse any grammatical errors.
+
+Thank you!
+![螢幕擷取畫面 2024-07-19 194502](https://github.com/user-attachments/assets/9b7aeaf7-3c52-4ebb-9213-52f0d83e3a6a)
+"
+"631","i can't seem to uninstall some stuff, it just kept saying that i needed to turn of uninstall protection","open","","wontfix","2024-08-09 09:45:08","2024-10-26 03:18:13","","riku1233","NONE","6","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/631",""
+"634","Feature request: changes to removal of leftovers confirmation window","open","","enhancement; low priority","2024-08-17 13:31:36","2024-08-21 15:12:24","","Alex-V69","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/634","Whenever I review the list of suggested leftovers to remove, I tend to look through their paths to make sure that they are indeed related to a program I just removed.
+
+The problem is that very often their path lengths are way bigger than the available screen space on my laptop, and I have to resize the path column manually to see the end of the path.
+
+I suggest either changing the row width so that it is able to wrap long string or truncate these paths somewhere in the middle so that only the beginning and the end of them are shown, and the rest is replaced with: '...'.
+
+Either of the suggested variants can be optional, with the possibility to enable it in the program settings."
+"640","NEW FEATURE: Re-launch after restarting","open","","enhancement","2024-08-29 08:59:02","2024-09-02 20:50:55","","UserAccount123","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/640","Add ability to auto re-launch after restarting PC; to complete the uninstall process."
+"644","High DPI Distorts the startup screen","open","","","2024-09-03 12:41:44","2024-09-03 12:41:44","","GiuseppeChillemi","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/644","I have a PC I use with TV. If I start BCUninstaller, the startup configuration screen which scrolls from right to left, scrolls of an amount not sufficient to move to the next panel. It seems the outer frame and the inner panel go out of sync regarding size.
+
+![image](https://github.com/user-attachments/assets/4e442330-4db7-4fad-a50e-d603daa57c2b)
+"
+"647","Whenever cleaning up Program Files folders, I get this message","open","","","2024-09-11 17:58:24","2024-11-15 14:48:50","","DistrictDawg","NONE","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/647","I apologize if someone else brought this up. I did search but couldn't find anything.
+
+Whenever I run the Clean Up Program Files Folder....
+
+![Screenshot 2024-09-11 135426](https://github.com/user-attachments/assets/3744081c-cb2d-4c59-9d1f-6c0eb4c56899)
+
+I get this message from Windows, even if run as an admin.
+
+![Screenshot 2024-09-11 135453](https://github.com/user-attachments/assets/f5b40945-3353-4f42-8c45-6af6d64b9104)
+"
+"649","无法扫描出clash和v2ray等翻墙软件","open","","","2024-09-24 20:13:16","2024-11-13 09:29:49","","lucasyumaroon","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/649","实际使用中发现这个软件无法扫描出clash和v2ray等翻墙软件，希望能够加以修复"
+"655","Errors on startup","open","","","2024-10-17 06:28:48","2024-11-13 09:23:04","","tbundy57","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/655","I keep getting errors on startup using the portable version. This only started with the new version. I tried the 64bit only and the 32bit only. It seems the errors are on the 64bit version only. This happens 3 times then goes on to complete (I hope) 
+![Image2](https://github.com/user-attachments/assets/3e47e6cb-e98f-49ef-b09b-5ba5d4873145)
+"
+"669","BCU wants to close just about every running background program when uninstalling","open","","","2024-11-21 06:42:37","2025-02-20 17:41:43","","BlepBlep","NONE","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/669","I've used BCU for years and when it gets to the ""kill tasks"" part, it always only wants you to close out of relevant programs. After updating to 5.8.2 from I have no idea what version I was on before, it now wants me to kill just about every program under the sun when uninstalling things that are completely unrelated to it. I wanted to uninstall a file compare tool that I only wanted to use once and didn't need anymore (which I've used and uninstalled with BCU before in the past), and it wants to kill literally every single program I have running, whether it be firefox, to everything (the search program), to Nvidia background stuff, to Discord, MSI afterburner, Steam, windows explorer, down to my damn UPS software, pretty much just open task manager and anything in there that isn't imperative to windows usage, it's in the ""kill"" list.
+
+I'm not sure if this is intentional, but I find it really odd that it does that now when it didn't before so I can only assume it's an unintentional bug."
+"680","(SERIOUS BUG) Bulk Crap Uninstaller FAILS to detect or show up ""Edge Browser"" in the searches for uninstallation. W11.","open","","","2024-12-02 03:21:22","2025-02-20 17:46:25","","ghost","NONE","6","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/680","(SERIOUS BUG) Bulk Crap Uninstaller FAILS to detect or show up ""Edge Browser"" in the searches for uninstallation thus killing the purpose behind 3rd party uninstallers (since uninstalling a program feature exists within Windows settings itself). Seen this with other system proprietary bloatware that comes out of the box with Windows.
+
+![image](https://github.com/user-attachments/assets/ca8b604f-c2a0-4dfe-8cec-cfab3e60ae2d)
+
+
+
+"
+"682","Bad scrolling animations","open","","bug","2024-12-05 10:40:34","2026-01-13 01:59:15","","trlef19","NONE","4","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/682","Its pretty choppy and slow
+
+https://github.com/user-attachments/assets/075d68ce-5396-445d-980c-4bea1813c112
+
+Windows 11 23H2"
+"683","After changing user rights, BCU does not see the current user's applications","open","","","2024-12-06 22:35:46","2025-02-20 17:48:49","","garfildalex6","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/683","Hello.
+The situation was like this on Windows.
+Installed BCU on an account with administrator rights (ADMIN). Then I decided to create a new account (ADMIN2) with administrator rights. And give the ADMIN account the rights of a regular user. 
+That is, it turned out like this:
+ADMIN (BCU is installed on it) - normal user rights 
+ADMIN2 - administrator rights
+
+Now when I launch BCU on the ADMIN account, I do not see any new installed programs. 
+Perhaps the problem is that due to the change in rights, most programs are now installed in a different directory.
+At the same time, even in the ADMIN2 account, BCU also does not see new programs.
+
+Tell me how to fix this problem?
+In advance, thank you for your help!"
+"685","Can the project icons be made larger and more attractive? Sometimes, larger icons are easier to recognize.","open","","enhancement; low priority","2024-12-18 08:58:21","2025-02-20 20:33:49","","Chengfanfu","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/685","Can the project icons be made larger and more attractive? Sometimes, larger icons are easier to recognize.
+![Clip_20241218_165330](https://github.com/user-attachments/assets/bf975cdd-cf31-401b-a312-a86811a00453)
+
+
+This software is quite useful, but the icons are too small. With so many apps that could be uninstalled, it makes them even harder to find. It could take a cue from Uninstall Tool's design, which is very simple and easy to navigate.
+![Clip_20241218_165111](https://github.com/user-attachments/assets/a44b1475-df4f-4f43-b23e-39e84897cbde)
+-attachments/assets/1d620370-4ae8-47fc-9cb0-2e4dffc0c588)
+"
+"690","exclude symlink as a program","open","","bug; junk/app detection","2025-01-08 05:41:53","2025-02-20 17:51:12","","gbostock","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/690","bcuninstaller recognizes symlink as an exe and causes duplicate uninstallable item"
+"691","[Feature Request/Bug] Text becomes unreadable with Rectify11 dark theme; request for customizable text color | 使用 rectify11 深色主题后字体无法查看，希望增加自定义文字颜色功能","open","","","2025-01-10 06:58:27","2025-01-15 00:38:21","","chenskiro","NONE","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/691","## Description
+After enabling the [Rectify11](https://github.com/Rectify11/Installer) dark theme, some text becomes unreadable. Even with colorblind mode enabled, certain text remains difficult to view. It would be great to add an option to customize text colors or improve the dark theme's functionality.
+
+## Environment
+System: Windows 11 24H2
+Version: 5.8.2.0
+
+## Screenshots
+![image](https://github.com/user-attachments/assets/8f653c67-9012-4723-8e31-15f9f6e4bd33)
+
+---
+
+## 描述
+当我启用 [rectify11](https://github.com/Rectify11/Installer) 深色主题后，会导致文字无法查看，即使打开色盲模式部分文字仍然无法查看，希望增加自定义文字颜色或增加深色主题功能
+
+## 环境
+- 系统: windows 11 24h2
+- 版本: 5.8.2.0"
+"699","Invalid leftover removal item","open","","bug; junk/app detection","2025-02-09 08:53:10","2025-02-20 17:59:04","","ilovedogsandpups","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/699","![Image](https://github.com/user-attachments/assets/fc041de5-2aa1-4c2d-80a8-1d8463d27200)
+
+I was trying to uninstall [Malwarebytes](https://www.malwarebytes.com/) and somehow Minecraft was on the leftover removal list with good confidence"
+"703","[FEATURE] Add ability to remember leftovers after closing Leftover Removal tool","open","","enhancement","2025-02-19 10:14:30","2025-04-28 12:37:19","","CaptainException","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/703","Pressing <kbd>ESC</kbd> in the Leftover Removal closes the window and makes you loose all the scanned leftover junk files (or rather not loose them as they will stay on your system).
+I pressed <kbd>ESC</kbd> to cancel a multi-selection I had created with <kbd>SHIFT</kbd> when selecting log files I wanted to keep and then the whole window was gone.
+Since BCU does not seem to cache detected leftover files, or at least create a log of the uninstallation process, I cannot clean my registry anymore (atleast not using BCU). The only way would be to reinstall all the crap I uninstalled which I can't remember anymore as it was just crap and nothing noteworthy.
+"
+"714","Desktop Icon Missing","open","","","2025-02-27 14:39:05","2025-04-28 12:36:19","","CometaQuack1","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/714","The last update brought an error, the icon does not appear as seen in the image
+
+![Image](https://github.com/user-attachments/assets/e6d8fcbb-7961-456b-a05d-631ed211aebf)"
+"716","Opera and Opera Air not listed","open","","junk/app detection","2025-03-02 17:22:37","2025-11-30 23:23:52","","pauldurham","NONE","8","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/716","I have both the browsers Opera and Opera Air installed on Windows 11 Enterprise. Neither of these is listed in Bulk Crap Uninstaller, even if I have set the application to list all entries. Interestingly, Chrome and Edge do show up in the list. Any ideas?"
+"717","Worked berfore but crash suddendly without any reasons","open","","bug","2025-03-03 08:46:42","2025-04-28 13:13:28","","Tarek2013","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/717","Hi
+I used BCU normally but, without explanations, I launched it yesterday and it crashed after having compiled all drives (the windows closes and I can't make it works again)
+
+Could you help please ? 
+
+Here's the log 
+
+[BCUninstaller.log](https://github.com/user-attachments/files/19050531/BCUninstaller.log)"
+"724","Marks all wrong items with Good confidence, all right items with Bad confidence","open","","bug; junk/app detection","2025-03-30 15:03:55","2025-07-17 14:20:17","","github-account1111","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/724","![Image](https://github.com/user-attachments/assets/c19b8608-9ec8-4b37-9ec8-dcb91e660729)
+
+Above is the leftover cleanup screen after uninstalling ExpressVPN. BCU has marked JDownloader, Mozilla, Zotero, Microsoft Office, Cloudflare as ""Good"" and ""Very good"" confidence.
+
+Right-clicking and selecting Details reveals ""Name matched perfectly"" as the reason:
+
+![Image](https://github.com/user-attachments/assets/b280c98c-8ff9-4035-82be-acef2b6dac6a)
+
+I struggle to see how ""JDownloader"" matches ""ExpressVPN"" when the two don't have a single character sequence in common.
+
+Funnily enough the only thing marked with ""Bad"" confidence is... ExpressVPN. I more or less had to invert my selection from BCU's recommendation before proceeding with the cleanup.
+
+Why is this happening? What's the logic behind BCU (seemingly) doing the exact opposite of what it should be doing?"
+"725","the application is not uninstalling games properly","open","","","2025-04-02 02:11:03","2025-04-28 12:18:20","","CodeJack9112","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/725","i tried to un install saints row gat outta hell and after un installations the game file still there please need help "
+"727","Leftover removal of ""Mentor Graphics CAMCAD Runtime install"" wants to remove half the Windows registry","open","","bug; junk/app detection","2025-04-04 15:50:44","2025-04-28 12:16:47","","Kusekushi","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/727","While uninstalling my PADS VX.2.12, I came across a massive list of supposed leftovers that allegedly have all good confidence - which are definitely unaffiliated with that tool.
+Examples include:
+
+![Image](https://github.com/user-attachments/assets/9389329a-e6bc-4b5f-ab6a-63fc93d9af20)
+
+![Image](https://github.com/user-attachments/assets/e42ded9a-5218-4952-a599-de6163bb5157)
+
+(it would clear out everything of HKLM/Software/Classes)
+![Image](https://github.com/user-attachments/assets/372137bd-de87-4d9c-aa7a-204bc4762186)
+
+![Image](https://github.com/user-attachments/assets/35443861-7a25-4d62-9e54-420bc601a5b9)
+
+![Image](https://github.com/user-attachments/assets/ad23bd5e-363b-4fc7-a369-f7fbe0d93d8f)
+
+This registry edit would be catastrophic if left checked."
+"728","删除雷电模拟器，仍然存在相关的文件夹残留","open","","junk/app detection","2025-04-05 03:19:12","2025-04-28 12:08:13","","StevenNotch","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/728","![Image](https://github.com/user-attachments/assets/8faa500d-6af8-4ed7-8d38-4e8e86b3f8f7)"
+"734","Almost had to deal with irreparable damage to my computer","open","","","2025-04-15 05:33:54","2025-04-28 11:51:53","","normalnaismann","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/734","I tried to uninstall an audio plugin to solve a problem I had with registration, and while trying do a deep clean after, it ended up suggesting I delete a long list of registry keys. Some of them looked legit so I went on with it, but I didn't notice there were MANY more than I expected. It actually deleted so many stuff I couldn't access any audio controllers, many apps that are not even remotely related to the one I uninstalled became inaccessible, even 7zip didn't work properly. It also didn't make a restore point when it said it did. I was using the portable version a lot before, I used the newest version now and it was a complete train wreck, nothing like what I experienced before.
+
+I had a restore point from a Windows update that solved the problem for me, luckily enough, but this was a serious problem that could have made me unable to do my daily job and impact my life seriously for a while. I won't share more info at this point because I don't know if I'm being extremely dumb or didn't read something vital (I think I did) or something so I'll wait to see about that before giving more details, if someone cares enough to help. If this qualifies as just a complaint I'm sorry, I still just want to share a really bad user experience I just had so at least I can understand how this came out so wrong. Thank you."
+"736","Feature Request: Automatic Leftover Removals/Leftover Scan without uninstallation","open","","enhancement","2025-04-18 07:07:47","2025-05-03 19:15:38","","karmadyota","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/736","Hi Team,
+
+I have a suggestion to further enhance Bulk Crap Uninstaller. Sometimes, users uninstall programs using the standard uninstallation method rather than BCU. In these cases, BCU can't remove leftover files, invalid registry entries, or stubborn driver installations because the original program isn't listed.
+
+A feature that scans for invalid registry entries, obsolete leftovers, and persistent driver installations would help users fine-tune their systems and maintain optimal performance.
+
+Thank you for considering this enhancement.
+
+Best regards,
+Karmadyota
+"
+"752","Version v4.16 not running under Windows XP","open","","","2025-06-01 22:23:58","2025-06-29 22:39:59","","DasFragezeichen","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/752","I have a VM with Windows XP running, because of the usage of old programs / games.
+I want to use [v4.16](https://github.com/Klocman/Bulk-Crap-Uninstaller/releases/tag/v4.16), but it dont work, because BCUninstaller_4.16_setup.exe is not a valid Win32 application."" Portable not running, too."
+"756","Feature request: Context Menu Manager under Tools","open","","enhancement; low priority","2025-06-14 12:16:29","2025-06-29 22:40:43","","alanjsebas","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/756","A lot of programs mess with the context menu, some seem to remain even after being 'uninstalled'. I think having a context menu manager could help remove a lot of unwanted entries not just from uninstalled programs but unneeded options in general. Maybe there can be a restore or undo/or a checkbox to show system context menus so the user doesn't accidentally delete those."
+"758","BCUninstaller Removed Shared Settings Folder for Multiple Blender Versions","open","","enhancement","2025-06-26 04:22:39","2025-06-29 22:46:57","","Aimad-LQ","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/758","Hello,
+
+I tried BCUninstaller for a while and it was very good, but I encountered an issue. I had both Blender versions 4.2 and 4.4 installed. I used the program to uninstall version 4.4, and it was precise in the uninstallation. However, the problem I faced is that it deleted the settings located at:
+
+> `..\AppData\Roaming\Blender Foundation\Blender\`
+
+It should have only removed the settings for Blender 4.4 and not treated the settings folders for each version as a single entry in the junk/leftover list.
+
+**Suggestions to improve the accuracy of handling leftovers after uninstallation:**
+
+1. Add an option to install programs through BCUninstaller while monitoring file and registry changes during the installation.
+
+2. Add a registry cleaner feature to manually clean leftovers without needing to uninstall the program. This would be useful in cases where the program was uninstalled normally (without using any uninstaller tool)."
+"763","Hindi installer translation needs to be updated","open","","help wanted","2025-06-30 17:36:07","2025-07-02 08:09:38","","Klocman","OWNER","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/763","Since the installer is now compiled with InnoSetup v6.4 the language files needed to be updated. I was able to find updates for all languages except for Hindi. Latest unofficial translation is for v5.5.3 here https://github.com/jrsoftware/issrc/blob/main/Files/Languages/Unofficial/Hindi.islu
+
+See #762 for details."
+"769","When the installer selects a non-English language, the program remains in English after installation if the ""Extra Languages"" option is unchecked","open","","enhancement","2025-07-02 08:05:23","2025-07-02 08:10:21","","zsyo","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/769","![Image](https://github.com/user-attachments/assets/1cce13da-062a-40b2-ad82-5e5f944c0d2e)
+
+When the installer selects Chinese as the installation language and the ""Extra Languages"" option is unchecked, the program will only be in English after installation, rather than the language selected during setup. This is somewhat counterintuitive.
+
+It is recommended that when selecting the installation language, if a non-English language is chosen, the default built-in language should be the selected language instead of English. If the English language pack is a necessary component of the program, it is suggested that even when the ""Extra Languages"" option is unchecked, the selected installation language can still be installed simultaneously."
+"770","Antivirus flagging latest BCU release as Trojan:Script/Wacatac.H!ml","open","","wontfix","2025-07-02 11:11:51","2025-10-20 14:38:26","","plasticducko","NONE","15","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/770","i'm encountering an issue where my antivirus is flagging the installer as a trojan. its my first time installing the software after downloading the latest release from github. can someone please confirm if this is just a false positive or why this is happening?"
+"775","First launch of an app produces an error (very minor thing)","open","","bug","2025-07-08 12:13:54","2025-08-03 17:20:33","","SeriousVlad","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/775","Hi, weren't able to find this issue through the search, so here you go. It's a minor thing, doesn't hinder the functionality, but still.
+Just installed BCU for the first time and received an error right after the launch.
+
+```
+BCUninstaller, Version=5.9.0.0, Culture=neutral, PublicKeyToken=null | MSIL | Microsoft Windows NT 10.0.26100.0 | 64bit
+Please note that uninstall lists are saved in the ""Advanced filtering"" view, not by exporting. Lists should have the .bcul extension.
+
+Error message: There is an error in XML document (1, 1).
+```
+
+I closed the app and launched it again and received the same error. Now I closed it and proceeded to finish the initial setup. After that, the error never occurred again."
+"779","Error: File doesn't exist (it does)","open","","","2025-07-17 14:15:32","2026-03-04 09:09:39","","github-account1111","NONE","5","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/779","Was trying to uninstall a package I installed through WinGet and encountered the following problem:
+
+<img width=""1444"" height=""398"" alt=""Image"" src=""https://github.com/user-attachments/assets/358a3cb3-962c-43a4-bbfd-5c52154762f6"" />
+
+That is despite the file being there:
+
+```shell
+> Get-Item 'C:\Program Files (x86)\WinGet\Packages\mikf.gallery-dl_Microsoft.Winget.Source_8wekyb3d8bbwe\gallery-dl.exe'
+
+
+    Directory: C:\Program Files (x86)\WinGet\Packages\mikf.gallery-dl_Microsoft.Winget.Source_8wekyb3d8bbwe
+
+
+Mode                 LastWriteTime         Length Name
+----                 -------------         ------ ----
+-a----        2025-06-22     13:15       21818829 gallery-dl.exe
+```"
+"780","Different information: size application ffmpeg nighlty (via scoop)","open","","","2025-07-23 07:59:01","2025-08-03 22:29:39","","3xploiton3","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/780","<img width=""938"" height=""84"" alt=""Image"" src=""https://github.com/user-attachments/assets/f91be365-dc5d-4555-871a-6052b04316fc"" />
+
+<img width=""874"" height=""490"" alt=""Image"" src=""https://github.com/user-attachments/assets/05808837-0c32-4139-b9b8-ce5aa4f15d7a"" />
+
+BCUninstaller version 5.9.0
+Windows 11"
+"781","Filtered for publisher, selected program but BCU says no uninstallers selected","open","","","2025-07-27 11:20:29","2025-08-03 19:19:50","","Tattvadarzin","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/781","I have just installed BCU.  I filtered for a publisher and filled in the name. I ticked the box and pressed Uninstall. I get a popup box saying No uninstallers were selected, nothing to uninstall.
+
+I tried deleting the filter text but I keep getting the message pop up box.
+
+I closed BCU then reopened. I did not use a filter selected my program directly and it uninstalled it without a problem."
+"784","Install date questionable","open","","","2025-08-05 13:20:47","2025-08-05 13:21:16","","bobf32","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/784","Hi, 
+
+Today, 5 Aug, I was testing BCU by installing a couple of steam games which I was then going to remove. After installation I sorted the BCU list view by descending Install date, expecting to see the latest games at, or at least near, to the top of the list. In fact I had to scroll down several pages before I got to them, and noticed that the install date column reported the games as being installed yesterday.
+
+In addition, there seemed to be many entries dated 4 Aug which were actually installed considerably before then. Seems that Install date is not a reliable indicator of when the app was, well, installed!"
+"788","Edge from yesterday fails to uninstall.","open","","","2025-08-19 02:53:08","2025-09-25 18:47:05","","crogonint","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/788","Hey, boss!! First off, I wanted to give you a hearty thank you for a new update! Deeply, deeply appreciate your efforts in keeping this ball rolling! I probably would have quit Windows by now if not for you. :)
+
+That said, it seems that Micro$oft is on the ball. The version of Edge they released yesterday fails standard uninstall. I mean, zero shock.. I just wanted to share the info. :)
+
+<img width=""1311"" height=""1050"" alt=""Image"" src=""https://github.com/user-attachments/assets/cfd7a6bb-5aa2-4ec5-91aa-de52b0b5142d"" />"
+"792","File size wrong","open","","","2025-08-27 20:03:00","2025-08-27 20:07:44","","Esperulo","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/792","Bulk Crap Uninstaller says that the size of Music Maker (musicmaker.exe) is 468 GB. In fact, it's 6 MB. It's only the installation program, not the installed program. CHKDSK confirms that there's no problem with the file system.
+
+Windows 10, version 10.0.19045.6218. The disk is formatted with NTFS.
+
+<img width=""1427"" height=""574"" alt=""Image"" src=""https://github.com/user-attachments/assets/4bc2ff99-f60b-4233-9972-503336d456b1"" />
+
+
+<img width=""471"" height=""523"" alt=""Image"" src=""https://github.com/user-attachments/assets/33b08bb3-fe8e-4dad-a21d-b94a0a344d43"" />"
+"793","The program freezes when deleting any application","open","","","2025-08-27 22:11:00","2025-09-06 22:46:13","","shmakov1996","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/793","When installing any version of this application, the program freezes when deleting any application, how to fix the problem? Windows 11"
+"794","BCU thinks a folder is an application as namee Revo Uninstaller","open","","","2025-08-31 14:50:57","2025-09-04 09:32:10","","CJ-AJ","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/794","I have a folder called softwares. I have all types on installations files in this folder. When I was using BCU it shows ( Revo Uninstaller) as having 25 GB file size. Even after I uninstalled Revo uninstaller , it still showed Revo uninstaller as 25 Gb still there. So when I tried to process with uninstallation any way it was trying to uninstall files and folders from the Software folder I had. My revo uninstaller wasn't even installed in this folder .  I think this is a bug or something 
+
+<img width=""1919"" height=""610"" alt=""Image"" src=""https://github.com/user-attachments/assets/c0d81337-c621-4e95-976a-95711d70b333"" />
+
+<img width=""1919"" height=""923"" alt=""Image"" src=""https://github.com/user-attachments/assets/a366b1b4-44fc-4b10-9dc8-1e699f005153"" />"
+"800","some apps dont show up in BCuninstaller List, one example i currently encountered is VMware Workstation","open","","","2025-09-25 18:40:26","2025-09-25 18:40:26","","CyberBonk","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/800","here is the current app location for VMware, C:\Program Files (x86)\VMware\VMware Workstation\vmware.exe
+
+VMware shows normally in windows settings - apps - uninstall Apps
+
+what info is needed so that i can help more?"
+"807","Incorrect publisher info for a game","open","","","2025-10-10 10:40:16","2026-03-02 18:33:15","","BothaGabri","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/807","Hi
+
+I have noticed that the following game has the incorrect publisher in BCUninstaller:
+
+乡村狂想曲 | GitHub, Inc. | 1.0.0 | 2025/09/21 | 1,25 GB |  | Steam | ""C:\Users\Gabri\Downloads\BCUninstaller_5.9.0_portable\win-x64\SteamHelper.exe"" uninstall 2109460 | ""C:\Users\Gabri\Downloads\BCUninstaller_5.9.0_portable\win-x64\SteamHelper.exe"" uninstall /silent 2109460 | 
+
+The publisher I believe is YooGames.
+
+Please let me know how I can help fixing this issue.
+
+(P.s. I am not affiliated, just a cautious user)"
+"809","Bubble Witch Saga","open","","","2025-10-12 15:45:16","2026-03-02 18:31:44","","H-Sapien","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/809","Those three words: Bubble Witch Saga
+
+I was pointed to BCU when I asked how to uninstall Msft's very large nuisance game things.
+
+Along with Candy Crush, Magic Kingdom, etcetera etcetera etcetera 
+
+Unfortunately, no luck.
+
+Possible?"
+"810","Swedish translation causes UI overflow in some windows","open","","bug; help wanted; good first issue","2025-10-14 17:49:14","2026-03-06 08:46:26","","XCOM-HUB","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/810","Hi, I've noticed that the Swedish translation in BCUninstaller occasionally causes text to overflow or extend beyond the boundaries of certain UI elements. This typically happens in dialog boxes or settings windows where the translated strings are longer than their English counterparts.
+
+Expected behavior: Text should be truncated, wrapped, or the UI should resize to accommodate longer translations.
+
+Additional context: This issue affects readability and usability for Swedish-speaking users. Let me know if you'd like help identifying specific strings or suggesting shorter alternatives.
+
+Screenshots:
+
+<img width=""712"" height=""978"" alt=""Image"" src=""https://github.com/user-attachments/assets/b82213ea-e35f-43fa-99de-7428fee38634"" />
+
+<img width=""920"" height=""1136"" alt=""Image"" src=""https://github.com/user-attachments/assets/ffe6b533-8cc9-4c00-a3e3-b442a7f0eeeb"" />"
+"813","Installer installs .NET 6 even when a higher .NET version (e.g., .NET 9) is already installed","open","","low priority","2025-10-30 13:43:59","2026-03-07 18:02:00","","san616mofo","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/813","**Description:**
+This is not a bug, but rather a suggestion for improvement.
+During the installation of **Bulk Crap Uninstaller**, the installer automatically installs **.NET Desktop Runtime 6.0.36 (x64)** without explicit user consent - it is only listed in the _""Ready to Install""_ step under _""Additional tasks""_.
+
+The issue is that the installer does not check whether a newer version of .NET is already present on the system. For example, if the user already has **.NET 9** installed (the latest version at the time of writing), the installer still proceeds to install **.NET 6**, which seems unnecessary and may clutter the system with redundant runtimes.
+
+**Expected Behavior:**
+- The installer (and ideally the application executable `BCUninstaller.exe` itself) should **detect existing .NET versions**.
+- If a **higher or compatible version** is already installed, the setup should **skip the installation of older runtimes**.
+
+**Reasoning / Benefits:**
+- Keeps the system clean by avoiding redundant .NET installations.
+- Saves installation time and disk space.
+- Improves user control and transparency during installation.
+
+**Suggestion:**
+Add a runtime version check in the installer logic (and possibly in the launcher binary) to ensure that only missing or required .NET versions are installed."
+"814","[Feature Request] [Accessibility + Convenience] Provide a 'Status' text column matching app list background color","open","","enhancement; good first issue","2025-11-02 21:19:53","2026-03-07 14:21:33","","5cover","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/814","The background color of items in the main window application list are used to convey the information for the state of an app (Verified Certificate, Unverified, Unregistered application, Windows Store App, Missing Uninstaller).
+
+Conveying information solely through colors is unpractical for colorblind people.
+
+While a Colorblind Mode is provided, it would be useful to provide the same information as a regular text column too.
+
+It could be something like a ""Status"" column, just behind ""System Component"".
+
+This would also provide a quality of life improvement by allowing to sort apps by this column."
+"816","BCunistaller Ran into some unexpected error","open","","cant-reproduce","2025-11-08 08:26:55","2026-03-02 18:06:09","","Ray-gun09","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/816","BCUninstaller, Version=5.9.0.0, Culture=neutral, PublicKeyToken=null | MSIL | Microsoft Windows NT 10.0.26100.0 | 64bit
+Please note that uninstall lists are saved in the ""Advanced filtering"" view, not by exporting. Lists should have the .bcul extension.
+
+Error message: There is an error in XML document (0, 0)."
+"818","cannot uninstall libreoffice and brave  a few times! still there","open","","","2025-12-09 13:17:52","2026-03-02 23:26:09","","anonysubscribe","NONE","2","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/818","can't uninstall as the programs show up with full size after uninstall!"
+"821","Some installations still in registry, disk(file/directory)","open","","invalid","2025-12-18 11:50:57","2026-03-02 18:01:02","","almacedo-prg","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/821","Some installations still in registry, disk(file/directory) after uninstall."
+"827","A bug was found in the uninstall from directory feature of the portable version 5.9.0.","open","","bug; cant-reproduce","2026-02-04 11:57:43","2026-03-02 17:58:53","","PiscesDreamer","NONE","0","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/827","When using the portable version 5.9.0's directory uninstallation feature, I found that the file selection menu would become unresponsive and fail to pop up, causing the entire software to appear frozen or crashed, which is quite frustrating.
+I hope this bug can be fixed soon!"
+"841","Full ARM64 support","open","","enhancement","2026-03-03 08:15:00","2026-03-05 05:18:36","","Klocman","OWNER","3","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/841","I can't do it myself since I don't have any hardware but it would be nice to have proper support, including ARM release builds.
+
+The launcher can be updated to detect ARM64 by using https://learn.microsoft.com/en-us/windows/win32/api/wow64apiset/nf-wow64apiset-iswow64process2"
+"862","Bug: Orphaned MSI uninstallers only visible as ""System components""","open","","","2026-03-06 11:20:15","2026-03-06 19:11:00","","pstein","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/862","I installed in the past various Python versions in Win10 via the corresponding *.msi package. 
+All into the same directory C:\Program Files\Python
+and without manually uninstalling the previous versions.
+
+Unfortunately the old Uninstaller entries survive as orphaned Uninstall entries in Registry.
+
+I want to delete them via BCU
+
+Strangely enough these old Uninstall entries are only visible when I tick checkbox ""Show system components"".
+See attached snapshot 1
+
+When I disable it then only 2 entries are shown.
+
+Why?
+
+Python is NOT a windows (=system) component.
+
+How can I force BCU to show only orphaned uninstall entries?
+
+<img width=""1801"" height=""779"" alt=""Image"" src=""https://github.com/user-attachments/assets/fdde2ffc-1a5d-4ae9-8a35-f2a21a4de7f0"" />
+<img width=""1801"" height=""779"" alt=""Image"" src=""https://github.com/user-attachments/assets/310e4700-7864-45d1-8b5a-b0dd243d992e"" />
+"
+"863","How to open BCU with a special search pattern and a customized set of filters?","open","","","2026-03-06 11:26:16","2026-03-06 19:27:10","","pstein","NONE","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/863","Occasionally I want to open BCU not in default mode but for a special scenario.
+
+Therefore I want to set a search pattern and tick certain filter checkboxes.
+Without doing this manually every time and without changing the default settings.
+
+So what I need is an option to save a preset ""blahblah123"" and to pass this as cmdline parameter to BCU like
+
+BCUninstaller.exe preset=""blahblah123""
+
+How can I achieve this?"
+"866","""The feature you are trying to use is on a network resource that is unavailable."" pop-up window in v6.1.0","open","","bug","2026-03-07 12:59:29","2026-03-07 14:15:16","","Klocman","OWNER","1","https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/866","On some systems a pop-up message might appear one or more times during initial application search asking for a network resource path. Closing the window lets BCU continue to load with no ill effects, so it's merely an annoyment.
+
+Previous discussion https://github.com/Klocman/Bulk-Crap-Uninstaller/issues/860#issuecomment-4016337363
+
+> This is the dialogue in question:
+> 
+> Windows Installer
+>
+>The feature you are trying to use is on a network resource that is unavailable.
+>
+>Click OK to try again, or enter an alternate path to a folder containing the installation package 'vba6.msi' in the box below.
+>
+>Use source:
+>X:\PLACEHOLDER
+> 
+> Eventually, BCU loaded. The dialogue does not appear anymore.
+> Do you know how and why it took such a long time and doesn't reappear?
+> 
+> Many thanks! 
+
+> @piknockyou Then it is specifically a v6.1 issue, it's caused by Msiexec enumeration as I've mentioned. It takes a long time for the same reason I bet.
+> 
+> I thought I avoided the ""network resource unavailable"" pop-up but I guess it still can happen, I guess you installed some application to a network drive?
+> 
+> Does the pop-up appear after closing and restarting BCU? If it doesn't appear then it's triggered by https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/05f2c74a9c2615be16c1e30f4e6ab5bdc7f25a51/source/KlocTools/IO/MsiTools.cs#L122 but if it does appear it's probably triggered by  https://github.com/Klocman/Bulk-Crap-Uninstaller/blob/05f2c74a9c2615be16c1e30f4e6ab5bdc7f25a51/source/KlocTools/IO/MsiTools.cs#L224
+
+It might be necessary to forgo using these APIs altogether and access the Msiexec database directly to avoid this issue. If anyone has any good ideas on how to solve this, please do let me know or even better make a PR."
